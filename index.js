@@ -1,6 +1,5 @@
 const { Requester, Validator } = require('@chainlink/external-adapter')
 
-
 // Define custom error scenarios for the API.
 // Return true for the adapter to retry.
 const customError = (data) => {
@@ -45,8 +44,10 @@ const createRequest = (input, callback) => {
     console.log(response.data.response[0].teams)
     console.log(response.data.response[0].fixture.status) 
     */
+
     var finalResult = {};
     finalResult.winner = "Pending";
+    //finalResult.fixture = fixtureId;
 
     if (response.data.response[0].fixture.status.short == 'FT') {
       if (response.data.response[0].teams.home.winner == true) {
@@ -55,13 +56,40 @@ const createRequest = (input, callback) => {
       else if (response.data.response[0].teams.away.winner == true) {
         finalResult.winner = response.data.response[0].teams.away.name
       }
+      else {
+        finalResult.winner = "Draw"
+      }
     }
     
+    finalResult.winner = fixtureId + "_" + finalResult.winner
     response.data = finalResult
+
+    /*
+    console.log(response)
+    console.log('###')
+    console.log(response.data)
+    console.log('###')
+    console.log(Requester.getResult(response, ['data']))
+    console.log('###')
+    console.log(Requester.getResult(response.data, ['winner']))
+    */
+
+    /*
+    Is it possible to use Requester.getResult to return a JSON value at all.
+    When I try this, I get the error:
+    Result:  { jobRunID: '1',
+      status: 'errored',
+      statusCode: 500,
+      error: { name: 'AdapterError', message: 'An error occurred.' } }
+
+    Take a look at the Requester code and see if there is an easy change.
+    */
     response.data.result = Requester.getResult(response.data, ['winner'])
 
-    //console.log('###Sending Respone###')
-    //console.log(response)
+    /*
+    console.log('###Sending Respone###')
+    console.log(response)
+    */
 
     callback(response.status, Requester.success(jobRunID, response))
   }).catch(function (error) {
