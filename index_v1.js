@@ -46,22 +46,22 @@ const createRequest = (input, callback) => {
     */
 
     var finalResult = {};
-    //finalResult.winner = "Pending";
-    finalResult.winner = 0;
+    finalResult.winner = "Pending";
+    //finalResult.fixture = fixtureId;
 
     if (response.data.response[0].fixture.status.short == 'FT') {
       if (response.data.response[0].teams.home.winner == true) {
-        finalResult.winner = 1 ; //response.data.response[0].teams.home.name
+        finalResult.winner = response.data.response[0].teams.home.name      
       }
       else if (response.data.response[0].teams.away.winner == true) {
-        finalResult.winner = 2; //response.data.response[0].teams.away.name
+        finalResult.winner = response.data.response[0].teams.away.name
       }
       else {
-        finalResult.winner = 3; //"Draw"
+        finalResult.winner = "Draw"
       }
     }
     
-    finalResult.winner = parseInt(fixtureId) * 10 + finalResult.winner
+    finalResult.winner = fixtureId + "_" + finalResult.winner
     response.data = finalResult
 
     /*
